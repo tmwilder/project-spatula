@@ -8,5 +8,5 @@ setup(name='spatula',
       author='Tim Wilder',
       author_email='tmwilder@gmail.com',
       url='https://www.python.org/sigs/distutils-sig/',
-      requires=['requests', "beautifulsoup4"],
+      requires=['requests', "beautifulsoup4", "alembic", "sqlalchemy", "mysqlclient"],
       packages=['spatula'])

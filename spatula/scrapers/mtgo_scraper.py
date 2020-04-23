@@ -7,11 +7,8 @@ import re
 
 class MtgoScraper:
     ua = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36"
-
     base_url = "https://magic.wizards.com/en/section-articles-see-more-ajax"
-
     wotc_date_fmt = "%m/%d/%Y"
-
     base_url_event_page = "https://magic.wizards.com/"
 
     def get_events_for_dates(self, start_date: datetime.datetime, end_date: datetime.datetime):

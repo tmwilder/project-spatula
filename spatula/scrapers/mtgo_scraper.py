@@ -16,10 +16,10 @@ class MtgoScraper:
 
     def get_events_for_dates(self, start_date: datetime.datetime, end_date: datetime.datetime):
         raw_events_html = self._fetch_events(start_date, end_date)
-        parsed_event_paths = self._parse_events(raw_events_html)
+        parsed_event_info = self._parse_events(raw_events_html)
         # TODO should probably rate limit/jitter this - but slow for testing
-        event_pages_html = [self._fetch_event_page(p) for p in parsed_event_paths]
-        parsed_events = [self._parse_event_page(h, l) for (h, l) in zip(event_pages_html, parsed_event_paths)]
+        event_pages_html = [self._fetch_event_page(p["link"]) for p in parsed_event_info]
+        parsed_events = [self._parse_event_page(h, i) for (h, i) in zip(event_pages_html, parsed_event_info)]
         return parsed_events
 
     def _fetch_events(self, start_date: datetime.datetime, end_date: datetime.datetime):
@@ -57,13 +57,32 @@ class MtgoScraper:
     def _parse_events(self, raw_events_html):
         events_dict = json.loads(raw_events_html)
         events = events_dict['data']
-        event_links = [self._parse_one_event_link(link_html) for link_html in events]
-        return event_links
+        event_infos = [self._parse_one_event_link(link_html) for link_html in events]
+        return event_infos
 
     def _parse_one_event_link(self, event_link_html):
-        soup = bs4.BeautifulSoup(event_link_html)
-        link = soup.find("a").get("href")
-        return link
+        soup = bs4.BeautifulSoup(event_link_html, features="html.parser")
+        event_tag = soup.find("a")
+
+        link = event_tag.get("href")
+        name = event_tag.find("div", attrs={"class": "title"}).find("h3").text
+
+        date_tag = event_tag.find("span", attrs={"class": "date"})
+        year = date_tag.find("span", attrs={"class": "year"}).text.strip()
+        month = date_tag.find("span", attrs={"class": "month"}).text.strip()
+        day = date_tag.find("span", attrs={"class": "day"}).text.strip()
+
+        datetime_of_event = datetime.datetime.strptime("{}-{}-{}".format(year, month, day), "%Y-%B-%d")
+        date_of_event = datetime.date(
+            year=datetime_of_event.year,
+            month=datetime_of_event.month,
+            day=datetime_of_event.day)
+
+        return {
+            "link": link,
+            "name": name,
+            "date": date_of_event
+        }
 
     def _fetch_event_page(self, event_path):
         headers = {
@@ -120,16 +139,15 @@ class MtgoScraper:
             "sb": sb_parsed
         }
 
-    def _parse_event_page(self, event_page_html, event_page_link):
-        soup = bs4.BeautifulSoup(event_page_html)
+    def _parse_event_page(self, event_page_html, event_info):
+        soup = bs4.BeautifulSoup(event_page_html, features="html.parser")
         decks = soup.findAll("div", attrs={"class": "deck-group"})
         parsed_decks = [self._parse_event_page_deck(deck) for deck in decks]
         return {
             "decks": parsed_decks,
-            "link": event_page_link,
-            "event_name": "", # TODO later - weirdly the individual decks are best spot for this...
-            "event_id": "",
-            "event_date": ""
+            "link": event_info["link"],
+            "event_name": event_info["name"],
+            "event_date": event_info["date"]
         }
 
 
@@ -137,13 +155,5 @@ if __name__ == "__main__":
     start = datetime.datetime.strptime("04/21/2020", MtgoScraper.wotc_date_fmt)
     end = datetime.datetime.strptime("04/22/2020", MtgoScraper.wotc_date_fmt)
     scraper = MtgoScraper()
-    # events = scraper._parse_events(scraper._fetch_events(start, end))
-    # print(events)
-    #
-    # page = scraper._fetch_event_page(events[0])
-    #
-    # with open("/tmp/test_page.html", "wb") as f:
-    #     f.write(page)
-
     parsed_events = scraper.get_events_for_dates(start, end)
     print(len(parsed_events))

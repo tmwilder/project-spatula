@@ -1,3 +1,4 @@
+import datetime
 import unittest
 import os.path as op
 from spatula.scrapers.mtgo_scraper import MtgoScraper
@@ -10,6 +11,9 @@ class TestMtgoScraper(unittest.TestCase):
             scraper = MtgoScraper()
             parsed_events = scraper._parse_events(raw_data)
             self.assertEqual(len(parsed_events), 9)
+            self.assertEqual(parsed_events[0]["link"], "/en/articles/archive/mtgo-standings/modern-premier-2020-04-22-0")
+            self.assertEqual(parsed_events[0]["name"], "Modern Premier")
+            self.assertEqual(parsed_events[0]["date"], datetime.date(2020, 4, 22))
 
     def test_parse_event_page(self):
         with open(op.join(op.realpath(op.dirname(__file__)), "mtgo_api_data", "event_page_modern_20200421.html")) as f:

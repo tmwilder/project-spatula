@@ -13,7 +13,7 @@ down_revision = None
 branch_labels = None
 depends_on = None
 
-g
+
 def upgrade():
     statement = """
         create table deck  (
@@ -43,6 +43,7 @@ def upgrade():
             name varchar(64) UNIQUE NOT NULL,
             card_type varchar(64) NOT NULL,
             image_url varchar(300) NOT NULL,
+            image_url_flip_side varchar(300),
             changed_on DATETIME DEFAULT now()
         )     
     """

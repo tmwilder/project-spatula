@@ -1,0 +1,1 @@
+from spatula.service.config import create_app

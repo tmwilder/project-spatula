@@ -29,3 +29,12 @@ https://api.cardmarket.com/ws/documentation/API_2.0:PriceGuide
   * For downgrading - `alembic downgrade -1`
   * See their project docs for adding new migrations 
 6. Run the web service out of your editor with debugger control - TODO
+
+# TODO
+1. Set up DB access fwork / config
+2. ETL in ScryFall Cards
+3. ETL in MTGO results - populating w/cards
+4. CRUD access API
+5. Local UI consuming w/format and some light filtering
+6. AWS-ify
+7. Gloat

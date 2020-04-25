@@ -3,6 +3,7 @@ import os
 from flask import Flask
 
 import spatula.service.db.connection_factory as connection_factory
+from spatula.service.resources.cards_resource import cr_bp
 
 
 def create_app(test_config=None):
@@ -32,6 +33,8 @@ def create_app(test_config=None):
         pass
 
     connection_factory.init_app(app)
+
+    app.register_blueprint(cr_bp)
 
     # a simple page that says hello
     @app.route('/hello')

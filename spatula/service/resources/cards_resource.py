@@ -1,36 +1,27 @@
-import functools
-
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
+    Blueprint, Response
 )
 
 from spatula.scrapers.scryfall_client import ScryFallClient
 from spatula.service.db.connection_factory import get_db
-from spatula.service.db.card_accessor import CardAccessor
+from spatula.service.core.card_service import CardService
 
-bp = Blueprint('auth', __name__, url_prefix='/cards')
+cr_bp = Blueprint('cards', __name__, url_prefix='/cards')
 
 
-@bp.route('/', method='POST')
+@cr_bp.route('', methods=['POST'])
 def pull_latest():
     db = get_db()
-    card_accessor = CardAccessor(db)
-    error = None
-
     client = ScryFallClient()
-    data = client.get_card_data()
+    card_service = CardService(db, client)
+    cards_added = card_service.load_cards(local=False)
+    return Response({"current_card_count": cards_added})
 
-    card_accessor.insert_cards(data)
 
-    if error is None:
-        db.execute(
-            'INSERT INTO user (username, password) VALUES (?, ?)',
-            (username, generate_password_hash(password))
-        )
-        db.commit()
-        return redirect(url_for('auth.login'))
-
-    return Response({
-        "cards_found": "",
-        "cards_added": ""
-    })
+@cr_bp.cli.command("load-cards")
+def load_cards():
+    db = get_db()
+    client = ScryFallClient()
+    card_service = CardService(db, client)
+    cards_added = card_service.load_cards(local=True)
+    return Response({"current_card_count": cards_added})

@@ -28,12 +28,13 @@ https://api.cardmarket.com/ws/documentation/API_2.0:PriceGuide
   * To update schema - `alembic upgrade head`
   * For downgrading - `alembic downgrade -1`
   * See their project docs for adding new migrations 
-6. Run the web service out of your editor with debugger control - TODO
+6. Load local card database data from test gz `FLASK_APP=spatula flask cards load-cards`
+7. Run the web service out of your editor with debugger control - TODO
 
 # TODO
-1. Set up DB access fwork / config
-2. ETL in ScryFall Cards
-3. ETL in MTGO results - populating w/cards
+1. Set up DB access fwork / config - Done
+2. ETL in ScryFall Cards - Done
+3. ETL in MTGO results - populating w/cards - On Deck
 4. CRUD access API
 5. Local UI consuming w/format and some light filtering
 6. AWS-ify

@@ -7,7 +7,7 @@ from spatula.scrapers.scryfall_client import ScryFallClient
 from spatula.service.db.card_accessor import CardAccessor
 
 
-class DeckService:
+class CardService:
     scryfall_client = None
     db = None
     card_accessor = None
@@ -24,6 +24,7 @@ class DeckService:
             cards = self.get_cards_local()
 
         self.card_accessor.insert_cards(cards)
+        return len(self.card_accessor.get_cards())
 
     def get_cards_remote(self):
         return self.scryfall_client.get_card_data()

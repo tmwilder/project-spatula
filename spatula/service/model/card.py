@@ -23,3 +23,6 @@ class Card:
         yield 'card_type', self.card_type
         yield 'image_url', self.image_url
         yield 'image_url_flip_side', self.image_url_flip_side
+
+    def __hash__(self):
+        return self.name

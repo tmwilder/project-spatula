@@ -19,6 +19,8 @@ def upgrade():
         create table deck  (
                 id INT PRIMARY KEY AUTO_INCREMENT,
                 format VARCHAR(128),
+                labeled_name VARCHAR(128),
+                classified_name VARCHAR(128),
                 changed_on DATETIME DEFAULT now()
             )
     """
